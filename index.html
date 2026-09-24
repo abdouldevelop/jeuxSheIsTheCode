@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz Cuisine</title>
+
+    <style>
+        /* ==============================
+           RESET
+        ============================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9a3c, #ff5e62);
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        /* ==============================
+           CONTENEUR PRINCIPAL
+        ============================== */
+
+        .quiz-container {
+            width: 100%;
+            max-width: 650px;
+
+            background: white;
+
+            border-radius: 25px;
+
+            padding: 30px;
+
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        /* ==============================
+           HEADER
+        ============================== */
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            color: #ff5e62;
+            font-size: 32px;
+        }
+
+        .header p {
+            margin-top: 8px;
+            color: #777;
+        }
+
+        /* ==============================
+           INFORMATIONS
+        ============================== */
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 12px;
+
+            font-weight: bold;
+            color: #444;
+        }
+
+        /* ==============================
+           PROGRESSION
+        ============================== */
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+
+            background: #eeeeee;
+
+            border-radius: 20px;
+            overflow: hidden;
+
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+
+            background: linear-gradient(
+                90deg,
+                #ff9a3c,
+                #ff5e62
+            );
+
+            transition: width 0.4s ease;
+        }
+
+        /* ==============================
+           QUESTION
+        ============================== */
+
+        .question-number {
+            color: #ff5e62;
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+        .question {
+            font-size: 23px;
+            color: #333;
+
+            margin-bottom: 25px;
+
+            line-height: 1.4;
+        }
+
+        /* ==============================
+           REPONSES
+        ============================== */
+
+        .answers {
+            display: grid;
+            gap: 12px;
+        }
+
+        .answer {
+            width: 100%;
+
+            background: #f8f8f8;
+
+            border: 2px solid #eeeeee;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            text-align: left;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .answer:hover {
+            border-color: #ff9a3c;
+            background: #fff4ea;
+
+            transform: translateY(-2px);
+        }
+
+        .answer.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .answer.wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .answer:disabled {
+            cursor: not-allowed;
+        }
+
+        /* ==============================
+           MESSAGE DE REPONSE
+        ============================== */
+
+        .feedback {
+            margin-top: 20px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            display: none;
+
+            font-weight: bold;
+        }
+
+        .feedback.correct-feedback {
+            display: block;
+
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .feedback.wrong-feedback {
+            display: block;
+
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ==============================
+           BOUTON
+        ============================== */
+
+        .next-btn {
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            margin-top: 20px;
+
+            background: #ff5e62;
+
+            color: white;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            display: none;
+
+            transition: 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #e74c50;
+            transform: translateY(-2px);
+        }
+
+        /* ==============================
+           RESULTATS
+        ============================== */
+
+        .result {
+            text-align: center;
+            display: none;
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+        }
+
+        .result h2 {
+            color: #ff5e62;
+
+            font-size: 30px;
+
+            margin-bottom: 15px;
+        }
+
+        .final-score {
+            font-size: 50px;
+            font-weight: bold;
+
+            color: #333;
+
+            margin: 20px 0;
+        }
+
+        .result-message {
+            color: #666;
+
+            font-size: 18px;
+
+            line-height: 1.5;
+
+            margin-bottom: 25px;
+        }
+
+        .restart-btn {
+            border: none;
+
+            background: #ff5e62;
+
+            color: white;
+
+            padding: 15px 30px;
+
+            border-radius: 12px;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .restart-btn:hover {
+            background: #e74c50;
+        }
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media(max-width: 600px) {
+
+            .quiz-container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+
+            .question {
+                font-size: 19px;
+            }
+
+            .answer {
+                font-size: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="quiz-container">
+
+    <!-- =========================
+         QUIZ
+    ========================== -->
+
+    <div id="quiz">
+
+        <div class="header">
+
+            <div class="logo">👩🏾‍🍳</div>
+
+            <h1>Quiz Cuisine</h1>
+
+            <p>Teste tes connaissances culinaires !</p>
+
+        </div>
+
+
+        <div class="quiz-info">
+
+            <span id="questionCounter">
+                Question 1 / 10
+            </span>
+
+            <span>
+                Score :
+                <span id="score">0</span>
+            </span>
+
+        </div>
+
+
+        <div class="progress-container">
+
+            <div
+                class="progress-bar"
+                id="progressBar">
+            </div>
+
+        </div>
+
+
+        <div class="question-number">
+
+            QUESTION
+            <span id="questionNumber">1</span>
+
+        </div>
+
+
+        <div
+            class="question"
+            id="questionText">
+
+            Chargement...
+
+        </div>
+
+
+        <div
+            class="answers"
+            id="answersContainer">
+        </div>
+
+
+        <div
+            class="feedback"
+            id="feedback">
+        </div>
+
+
+        <button
+            class="next-btn"
+            id="nextBtn">
+
+            Question suivante →
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         RESULTAT
+    ========================== -->
+
+    <div
+        class="result"
+        id="result">
+
+        <div
+            class="result-icon"
+            id="resultIcon">
+
+            🏆
+
+        </div>
+
+        <h2>Quiz terminé !</h2>
+
+        <p>Ton score est :</p>
+
+        <div
+            class="final-score"
+            id="finalScore">
+
+            0 / 10
+
+        </div>
+
+        <p
+            class="result-message"
+            id="resultMessage">
+        </p>
+
+
+        <button
+            class="restart-btn"
+            onclick="restartQuiz()">
+
+            🔄 Recommencer
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =================================
+       LISTE DES QUESTIONS
+    ================================= */
+
+    const questions = [
+
+        {
+            question:
+            "Quel ingrédient est principalement utilisé pour préparer l'attiéké ?",
+
+            answers: [
+                "Le riz",
+                "Le manioc",
+                "Le maïs",
+                "La pomme de terre"
+            ],
+
+            correct: 1
+        },
+
+
+        {
+            question:
+            "Quel ustensile utilise-t-on généralement pour couper des légumes ?",
+
+            answers: [
+                "Une louche",
+                "Un couteau",
+                "Une cuillère",
+                "Une passoire"
+            ],
+
+            correct: 1
+        },
+
+
+        {
+            question:
+            "Quel ingrédient est indispensable pour préparer une omelette classique ?",
+
+            answers: [
+                "Des œufs",
+                "Du riz",
+                "Du poisson",
+                "Du chocolat"
+            ],
+
+            correct: 0
+        },
+
+
+        {
+            question:
+            "Quelle méthode de cuisson utilise de l'huile très chaude ?",
+
+            answers: [
+                "La cuisson vapeur",
+                "La friture",
+                "La cuisson au four",
+                "La cuisson à l'eau"
+            ],
+
+            correct: 1
+        },
+
+
+        {
+            question:
+            "Quel aliment doit généralement être conservé au réfrigérateur ?",
+
+            answers: [
+                "Le sel",
+                "Le sucre",
+                "La viande fraîche",
+                "Le riz sec"
+            ],
+
+            correct: 2
+        },
+
+
+        {
+            question:
+            "Quel fruit est souvent utilisé pour préparer du jus naturel en Côte d'Ivoire ?",
+
+            answers: [
+                "La mangue",
+                "La pomme de terre",
+                "L'oignon",
+                "Le manioc"
+            ],
+
+            correct: 0
+        },
+
+
+        {
+            question:
+            "Que faut-il faire avant de commencer à cuisiner ?",
+
+            answers: [
+                "Regarder la télévision",
+                "Se laver les mains",
+                "Dormir",
+                "Éteindre toutes les lumières"
+            ],
+
+            correct: 1
+        },
+
+
+        {
+            question:
+            "Quel ustensile permet principalement d'égoutter les pâtes ?",
+
+            answers: [
+                "Une passoire",
+                "Une fourchette",
+                "Une poêle",
+                "Une assiette"
+            ],
+
+            correct: 0
+        },
+
+
+        {
+            question:
+            "Quel appareil permet de conserver les aliments au froid ?",
+
+            answers: [
+                "Le four",
+                "Le mixeur",
+                "Le réfrigérateur",
+                "La cuisinière"
+            ],
+
+            correct: 2
+        },
+
+
+        {
+            question:
+            "Pourquoi faut-il laver les fruits et légumes avant de les consommer ?",
+
+            answers: [
+                "Pour les rendre plus lourds",
+                "Pour enlever les saletés et certains contaminants",
+                "Pour changer leur couleur",
+                "Pour les rendre plus sucrés"
+            ],
+
+            correct: 1
+        }
+
+    ];
+
+
+    /* =================================
+       VARIABLES
+    ================================= */
+
+    let currentQuestion = 0;
+
+    let score = 0;
+
+    let answered = false;
+
+
+    /* =================================
+       ELEMENTS HTML
+    ================================= */
+
+    const questionText =
+        document.getElementById("questionText");
+
+    const answersContainer =
+        document.getElementById("answersContainer");
+
+    const questionCounter =
+        document.getElementById("questionCounter");
+
+    const questionNumber =
+        document.getElementById("questionNumber");
+
+    const scoreElement =
+        document.getElementById("score");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    const feedback =
+        document.getElementById("feedback");
+
+    const nextBtn =
+        document.getElementById("nextBtn");
+
+
+    /* =================================
+       AFFICHER UNE QUESTION
+    ================================= */
+
+    function showQuestion() {
+
+        answered = false;
+
+        feedback.style.display = "none";
+
+        feedback.className = "feedback";
+
+        nextBtn.style.display = "none";
+
+
+        const question =
+            questions[currentQuestion];
+
+
+        /* Question */
+
+        questionText.textContent =
+            question.question;
+
+
+        /* Numéro */
+
+        questionNumber.textContent =
+            currentQuestion + 1;
+
+
+        questionCounter.textContent =
+            `Question ${currentQuestion + 1} / ${questions.length}`;
+
+
+        /* Barre de progression */
+
+        const progression =
+            ((currentQuestion + 1) / questions.length) * 100;
+
+        progressBar.style.width =
+            progression + "%";
+
+
+        /* Nettoyer les anciennes réponses */
+
+        answersContainer.innerHTML = "";
+
+
+        /* Créer les boutons */
+
+        question.answers.forEach(
+            function(answer, index) {
+
+                const button =
+                    document.createElement("button");
+
+                button.classList.add("answer");
+
+                button.textContent =
+                    answer;
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        selectAnswer(
+                            index,
+                            button
+                        );
+
+                    }
+                );
+
+
+                answersContainer.appendChild(
+                    button
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =================================
+       VERIFIER UNE REPONSE
+    ================================= */
+
+    function selectAnswer(
+        selectedIndex,
+        selectedButton
+    ) {
+
+        if (answered) {
+            return;
+        }
+
+
+        answered = true;
+
+
+        const question =
+            questions[currentQuestion];
+
+
+        const buttons =
+            document.querySelectorAll(
+                ".answer"
+            );
+
+
+        /* Désactiver les boutons */
+
+        buttons.forEach(
+            function(button) {
+
+                button.disabled = true;
+
+            }
+        );
+
+
+        /* Bonne réponse */
+
+        if (
+            selectedIndex ===
+            question.correct
+        ) {
+
+            score++;
+
+            scoreElement.textContent =
+                score;
+
+
+            selectedButton.classList.add(
+                "correct"
+            );
+
+
+            feedback.textContent =
+                "✅ Bravo ! Bonne réponse.";
+
+            feedback.className =
+                "feedback correct-feedback";
+
+        }
+
+        /* Mauvaise réponse */
+
+        else {
+
+            selectedButton.classList.add(
+                "wrong"
+            );
+
+
+            buttons[
+                question.correct
+            ].classList.add(
+                "correct"
+            );
+
+
+            feedback.textContent =
+                "❌ Mauvaise réponse. La bonne réponse est : " +
+                question.answers[
+                    question.correct
+                ];
+
+            feedback.className =
+                "feedback wrong-feedback";
+
+        }
+
+
+        feedback.style.display =
+            "block";
+
+
+        nextBtn.style.display =
+            "block";
+
+
+        /* Dernière question */
+
+        if (
+            currentQuestion ===
+            questions.length - 1
+        ) {
+
+            nextBtn.textContent =
+                "Voir mon résultat 🏆";
+
+        }
+
+        else {
+
+            nextBtn.textContent =
+                "Question suivante →";
+
+        }
+
+    }
+
+
+    /* =================================
+       QUESTION SUIVANTE
+    ================================= */
+
+    nextBtn.addEventListener(
+        "click",
+        function() {
+
+            currentQuestion++;
+
+
+            if (
+                currentQuestion <
+                questions.length
+            ) {
+
+                showQuestion();
+
+            }
+
+            else {
+
+                showResult();
+
+            }
+
+        }
+    );
+
+
+    /* =================================
+       RESULTAT
+    ================================= */
+
+    function showResult() {
+
+        document.getElementById(
+            "quiz"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "result"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "finalScore"
+        ).textContent =
+            score +
+            " / " +
+            questions.length;
+
+
+        const percentage =
+            (score / questions.length) * 100;
+
+
+        let message = "";
+
+        let icon = "";
+
+
+        if (percentage === 100) {
+
+            icon = "🏆";
+
+            message =
+                "Exceptionnel ! Tu es un véritable chef cuisinier !";
+
+        }
+
+        else if (percentage >= 80) {
+
+            icon = "👨🏾‍🍳";
+
+            message =
+                "Excellent travail ! Tu maîtrises très bien la cuisine.";
+
+        }
+
+        else if (percentage >= 60) {
+
+            icon = "👏";
+
+            message =
+                "Très bien ! Continue à apprendre et à pratiquer.";
+
+        }
+
+        else if (percentage >= 40) {
+
+            icon = "📚";
+
+            message =
+                "Pas mal ! Encore quelques efforts et tu progresseras.";
+
+        }
+
+        else {
+
+            icon = "💪";
+
+            message =
+                "Continue à apprendre. Tu feras mieux au prochain essai !";
+
+        }
+
+
+        document.getElementById(
+            "resultIcon"
+        ).textContent =
+            icon;
+
+
+        document.getElementById(
+            "resultMessage"
+        ).textContent =
+            message;
+
+    }
+
+
+    /* =================================
+       RECOMMENCER
+    ================================= */
+
+    function restartQuiz() {
+
+        currentQuestion = 0;
+
+        score = 0;
+
+        answered = false;
+
+
+        scoreElement.textContent =
+            "0";
+
+
+        document.getElementById(
+            "result"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "quiz"
+        ).style.display =
+            "block";
+
+
+        showQuestion();
+
+    }
+
+
+    /* =================================
+       DEMARRAGE
+    ================================= */
+
+    showQuestion();
+
+</script>
+
+</body>
+</html>
